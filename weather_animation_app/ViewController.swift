@@ -59,7 +59,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         backgroundImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(backgroundImageView)
         setupCollectionView()
-        setupLanguageToggleButton()
         setupWeatherElements()
         
         let randomIndex = Int(arc4random_uniform(UInt32(weatherConditions.count)))
@@ -74,7 +73,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         
         collectionView.layoutIfNeeded()
     }
-    
     
     func setupCollectionView() {
         let layout = UICollectionViewFlowLayout()
@@ -101,28 +99,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         ])
     }
     
-    func setupLanguageToggleButton() {
-        let toggleButton = UIButton(type: .system)
-        toggleButton.setImage(UIImage(systemName: "globe"), for: .normal)
-        toggleButton.tintColor = .white
-        toggleButton.addTarget(self, action: #selector(toggleLanguage), for: .touchUpInside)
-        toggleButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(toggleButton)
-        
-        NSLayoutConstraint.activate([
-            toggleButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            toggleButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
-        ])
-    }
-    
-    @objc func toggleLanguage() {
-        currentLanguage = currentLanguage == "en" ? "ru" : "en"
-        UIView.transition(with: collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
-            self.collectionView.reloadData()
-        })
-    }
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return weatherConditions.count * 1000
     }
@@ -142,20 +118,13 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedCondition = weatherConditions[indexPath.item % weatherConditions.count]
         currentWeather = selectedCondition.3
-        
-        // Update background color
         UIView.animate(withDuration: 0.5) {
             self.view.backgroundColor = selectedCondition.2.withAlphaComponent(0.6)
         }
-        
-        // Scroll to center the selected item
         let centerIndexPath = IndexPath(item: indexPath.item, section: 0)
         collectionView.scrollToItem(at: centerIndexPath, at: .centeredHorizontally, animated: true)
-        
-        // Animate the selected weather condition
         animateWeatherCondition()
     }
-    
     
     func setupWeatherElements() {
         let cloudSize: CGFloat = 150
